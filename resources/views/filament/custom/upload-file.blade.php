@@ -1,13 +1,9 @@
 <div>
     <x-filament::breadcrumbs :breadcrumbs="[
-    '/admin/produks' => 'Produk',
-    '' => 'List',
+    '' => $data['master'] ,
     ]" />
     <div class="flex justify-between mt-1">
-        <div class="font-bold text-3xl">Produk</div>
-        <div>
-            {{ $data }}
-        </div>
+        <div class="font-bold text-3xl">{{ $data['judul'] }}</div>
     </div>
     <div>
         <form wire:submit="save" class="w-full max-w-sm flex mt-2">

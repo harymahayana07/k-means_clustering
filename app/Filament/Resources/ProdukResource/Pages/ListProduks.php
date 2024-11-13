@@ -23,7 +23,8 @@ class ListProduks extends ListRecords
 
     public function getHeader(): ?View
     {
-        $data = Actions\CreateAction::make();
+        $data['master'] = 'List Master Produk';
+        $data['judul'] = 'Produk';
         return view('filament.custom.upload-file', compact('data'));
     }
 
