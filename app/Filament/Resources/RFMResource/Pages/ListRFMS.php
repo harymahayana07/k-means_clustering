@@ -19,11 +19,4 @@ class ListRFMS extends ListRecords
         ];
     }
 
-    public function getHeader(): ?View
-    {
-        $data = Actions\CreateAction::make();
-        $tab['master'] = 'Recency Frequency Monetary';
-        $tab['judul'] = 'RFM';
-        return view('filament.custom.header-rfm', compact('data','tab'));
-    }
 }
