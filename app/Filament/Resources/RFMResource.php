@@ -31,7 +31,6 @@ class RFMResource extends Resource
     {
         return $form
             ->schema([
-                
                 DatePicker::make('start_date')
                     ->label('Start Date')
                     ->native(false)
@@ -50,7 +49,9 @@ class RFMResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('id')->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('pelanggan_id')->label('Pelanggan ID')->sortable()
+                Tables\Columns\TextColumn::make('pelanggan.no_pelanggan')
+                    ->label('No Pelanggan')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('recency')
                     ->searchable(),
@@ -58,9 +59,7 @@ class RFMResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('monetary')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('rfm_score')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('cluster')
+                Tables\Columns\TextColumn::make('rfm_score')->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -74,12 +73,13 @@ class RFMResource extends Resource
             ->filters([
                 
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]);
+            // ->actions([
+            //     Tables\Actions\EditAction::make(),
+            // ])
+            // ->bulkActions([
+            //     Tables\Actions\DeleteBulkAction::make(),
+            // ])
+            ->defaultSort('rfm_score', 'desc');
     }
 
     public static function getRelations(): array

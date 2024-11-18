@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -17,6 +16,7 @@ return new class extends Migration
             $table->integer('recency');
             $table->integer('frequency');
             $table->integer('monetary');
+            $table->integer('rfm_score');
             $table->timestamps();
             $table->softDeletes();
         });
