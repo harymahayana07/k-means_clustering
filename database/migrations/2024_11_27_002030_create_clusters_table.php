@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pelanggans', function (Blueprint $table) {
+        Schema::create('clusters', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('no_pelanggan')->unique();
-            $table->string('nama_pelanggan');
-            $table->string('email_pelanggan')->unique()->nullable();
-            $table->string('no_telp_pelanggan')->nullable();
+            $table->string('nama')->comment('Nama cluster: High Value, Medium Value, Low Value');
+            $table->text('deskripsi')->nullable()->comment('Deskripsi tambahan tentang cluster');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pelanggans');
+        Schema::dropIfExists('clusters');
     }
 };

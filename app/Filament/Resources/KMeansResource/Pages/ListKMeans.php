@@ -46,7 +46,7 @@ class ListKMeans extends ListRecords
         }
 
         // Validasi data RFM
-        $rfms = DB::table('rfms')->get(['recency', 'frequency', 'monetary']);
+        $rfms = DB::table('rfms')->get(['pelanggan_id', 'recency', 'frequency', 'monetary']);
         if ($rfms->isEmpty()) {
             Notification::make()
                 ->title('Clustering Gagal')
@@ -56,8 +56,9 @@ class ListKMeans extends ListRecords
             return;
         }
 
-        // Ambil data points dari RFM
+        // Ambil data points dan pelanggan_id dari RFM
         $dataPoints = $rfms->map(fn($item) => [$item->recency, $item->frequency, $item->monetary])->toArray();
+        $pelangganIds = $rfms->pluck('pelanggan_id')->toArray();
 
         // Validasi jumlah cluster lebih kecil dari jumlah data points
         if ($clusterCount > count($dataPoints)) {
@@ -70,10 +71,11 @@ class ListKMeans extends ListRecords
         }
 
         // Inisialisasi centroid secara acak
+        DB::table('kmeans')->truncate(); // Bersihkan data lama
         $randomIndices = array_rand($dataPoints, $clusterCount);
         $centroids = array_map(fn($index) => $dataPoints[$index], (array) $randomIndices);
 
-        $maxIterations = 100; // Maksimum iterasi untuk konvergensi
+        $maxIterations = 100; // Maksimum iterasi
         $clusters = [];
         $prevCentroids = null;
 
@@ -82,10 +84,10 @@ class ListKMeans extends ListRecords
             $clusters = array_fill(0, $clusterCount, []);
 
             // Assign setiap data point ke cluster terdekat
-            foreach ($dataPoints as $point) {
+            foreach ($dataPoints as $index => $point) {
                 $distances = array_map(fn($centroid) => $this->euclideanDistance($point, $centroid), $centroids);
                 $closestCluster = array_search(min($distances), $distances);
-                $clusters[$closestCluster][] = $point;
+                $clusters[$closestCluster][] = $index;
             }
 
             // Simpan centroid sebelumnya
@@ -96,7 +98,7 @@ class ListKMeans extends ListRecords
                 if (!empty($clusterPoints)) {
                     $centroids[$clusterIndex] = array_map(
                         fn(...$values) => array_sum($values) / count($values),
-                        ...$clusterPoints
+                        ...array_map(fn($index) => $dataPoints[$index], $clusterPoints)
                     );
                 }
             }
@@ -121,12 +123,32 @@ class ListKMeans extends ListRecords
             }
         }
 
+        // Simpan hasil akhir clustering ke tabel pelanggan_clusters
+        DB::table('hasil_kmeans')->truncate(); // Bersihkan data lama
+        $clusterAssignments = [];
+        foreach ($clusters as $clusterId => $clusterPoints) {
+            foreach ($clusterPoints as $pointIndex) {
+                $clusterAssignments[] = [
+                    'pelanggan_id' => $pelangganIds[$pointIndex],
+                    'cluster_id' => $clusterId + 1, // Cluster dimulai dari 1
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+
+        Log::info('INI CLUSTER PELANGGAN YANG AKAN DISAVE:'.json_encode($clusterAssignments,JSON_PRETTY_PRINT));
+
+        $hasilKmeans = DB::table('hasil_kmeans')->insert($clusterAssignments);
+
         // Kirim notifikasi sukses
-        Notification::make()
-            ->title('Clustering Berhasil')
-            ->body('Hasil clustering telah disimpan ke database.')
-            ->success()
-            ->send();
+        if ($hasilKmeans) {
+            Notification::make()
+                ->title('Clustering Berhasil')
+                ->body('Hasil clustering telah disimpan ke database.')
+                ->success()
+                ->send();
+        }
     }
 
     /**
@@ -152,5 +174,5 @@ class ListKMeans extends ListRecords
             $newCentroids
         );
     }
-    
+
 }

@@ -41,12 +41,12 @@ class KMeansResource extends Resource
                 Tables\Columns\TextColumn::make('centroids')
                 ->label('Centroids')
                 ->formatStateUsing(fn($state) => self::formatCentroids(json_decode($state, true)))
-                    ->html(), // Centroid ditampilkan dengan label C1, C2, dll.
+                    ->html(),
 
                 Tables\Columns\TextColumn::make('clusters')
                 ->label('Clusters')
                 ->formatStateUsing(fn($state) => self::formatClusters(json_decode($state, true)))
-                    ->html(), // Cluster ditampilkan dengan anggota data
+                    ->html(),
 
                 Tables\Columns\TextColumn::make('differences')
                 ->label('Differences')
@@ -59,10 +59,10 @@ class KMeansResource extends Resource
 
             ])
             ->filters([
-                // Tambahkan filter jika diperlukan
+               //filter
             ])
-            ->actions([]) // Tidak ada aksi edit atau hapus
-            ->bulkActions([]); // Tidak ada bulk actions
+            ->actions([])
+            ->bulkActions([]);
     }
 
     /**
@@ -99,7 +99,7 @@ class KMeansResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            // 
         ];
     }
 
