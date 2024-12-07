@@ -31,8 +31,7 @@
             const ctx = document.getElementById('transaksiChart')?.getContext('2d');
 
             const chartContainer = document.querySelector('.chart-container');
-
-            // Buat ResizeObserver untuk memantau perubahan ukuran
+            
             const resizeObserver = new ResizeObserver(() => {
                 if (window.myChart) {
                     window.myChart.resize();
@@ -48,18 +47,13 @@
             const labels = JSON.parse(chartData.getAttribute('data-labels') || '[]');
             const values = JSON.parse(chartData.getAttribute('data-values') || '[]');
 
-            console.log('Labels:', labels);
-            console.log('Values:', values);
-
             if (window.myChart) {
-                console.log('Updating existing chart...', window.myChart);
-                // Perbarui data chart yang sudah ada
                 window.myChart.data.labels = labels;
                 window.myChart.data.datasets[0].data = values;
 
                 window.myChart.update();
             } else {
-                // Buat chart baru jika belum ada
+                
                 window.myChart = new Chart(ctx, {
                     type: 'line',
                     data: {
@@ -74,8 +68,8 @@
                         }]
                     },
                     options: {
-                        responsive: true, // Nonaktifkan responsivitas
-                        maintainAspectRatio: false, // Hindari mempertahankan aspek rasio
+                        responsive: true,
+                        maintainAspectRatio: false,
                         plugins: {
                             legend: {
                                 display: true,
@@ -91,21 +85,16 @@
                 });
             }
         };
-
-        // Tombol untuk memicu pembaruan data
+        
         const button = document.getElementById('loadDataButton');
         if (button) {
             button.addEventListener('click', () => {
                 setTimeout(() => {
-                    console.log('Triggering chart update...');
                     updateChart();
-                }, 500); // Tunggu sedikit sebelum memuat ulang chart
+                }, 500);
             });
-        } else {
-            console.error('Button not found by ID.');
         }
-
-        // Panggil updateChart saat pertama kali dimuat
+        
         updateChart();
     });
 </script>
