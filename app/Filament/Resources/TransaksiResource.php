@@ -100,6 +100,7 @@ class TransaksiResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('tanggal_transaksi', 'desc')
             ->filters([
                 // Filter Berdasarkan Tahun
                 Filter::make('filter_tahun')
