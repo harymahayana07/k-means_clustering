@@ -3,12 +3,14 @@
 namespace App\Filament\Resources\KMeansResource\Pages;
 
 use App\Filament\Resources\KMeansResource;
+use App\Notifications\ClusterAssignmentNotification;
 use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification as FacadesNotification;
 use Mockery\Undefined;
 use SebastianBergmann\Type\ObjectType;
 
@@ -34,7 +36,6 @@ class ListKMeans extends ListRecords
 
     public function calculateClustering()
     {
-        // Validasi jumlah cluster
         $clusterCount = (int) $this->jumlah_cluster;
         if ($clusterCount <= 0) {
             Notification::make()
@@ -45,7 +46,6 @@ class ListKMeans extends ListRecords
             return;
         }
 
-        // Validasi data RFM
         $rfms = DB::table('rfms')->get(['pelanggan_id', 'recency', 'frequency', 'monetary']);
         if ($rfms->isEmpty()) {
             Notification::make()
@@ -56,11 +56,9 @@ class ListKMeans extends ListRecords
             return;
         }
 
-        // Ambil data points dan pelanggan_id dari RFM
         $dataPoints = $rfms->map(fn($item) => [$item->recency, $item->frequency, $item->monetary])->toArray();
         $pelangganIds = $rfms->pluck('pelanggan_id')->toArray();
 
-        // Validasi jumlah cluster lebih kecil dari jumlah data points
         if ($clusterCount > count($dataPoints)) {
             Notification::make()
                 ->title('Clustering Gagal')
@@ -70,30 +68,25 @@ class ListKMeans extends ListRecords
             return;
         }
 
-        // Inisialisasi centroid secara acak
-        DB::table('kmeans')->truncate(); // Bersihkan data lama
+        DB::table('kmeans')->truncate();
         $randomIndices = array_rand($dataPoints, $clusterCount);
         $centroids = array_map(fn($index) => $dataPoints[$index], (array) $randomIndices);
 
-        $maxIterations = 100; // Maksimum iterasi
+        $maxIterations = 100;
         $clusters = [];
         $prevCentroids = null;
 
         for ($iteration = 1; $iteration <= $maxIterations; $iteration++) {
-            // Reset clusters di setiap iterasi
             $clusters = array_fill(0, $clusterCount, []);
 
-            // Assign setiap data point ke cluster terdekat
             foreach ($dataPoints as $index => $point) {
                 $distances = array_map(fn($centroid) => $this->euclideanDistance($point, $centroid), $centroids);
                 $closestCluster = array_search(min($distances), $distances);
                 $clusters[$closestCluster][] = $index;
             }
 
-            // Simpan centroid sebelumnya
             $prevCentroids = $centroids;
 
-            // Hitung centroid baru berdasarkan rata-rata dari setiap cluster
             foreach ($clusters as $clusterIndex => $clusterPoints) {
                 if (!empty($clusterPoints)) {
                     $centroids[$clusterIndex] = array_map(
@@ -103,10 +96,8 @@ class ListKMeans extends ListRecords
                 }
             }
 
-            // Hitung perubahan (differences) centroid dibanding iterasi sebelumnya
             $differences = $this->calculateDifferences($prevCentroids, $centroids);
 
-            // Simpan hasil iterasi ke tabel `kmeans`
             DB::table('kmeans')->insert([
                 'iteration' => $iteration,
                 'centroids' => json_encode($centroids),
@@ -117,38 +108,51 @@ class ListKMeans extends ListRecords
                 'updated_at' => now(),
             ]);
 
-            // Hentikan iterasi jika centroid tidak berubah
             if (empty(array_filter($differences))) {
                 break;
             }
         }
 
-        // Simpan hasil akhir clustering ke tabel pelanggan_clusters
-        DB::table('hasil_kmeans')->truncate(); // Bersihkan data lama
+        DB::table('hasil_kmeans')->truncate();
         $clusterAssignments = [];
         foreach ($clusters as $clusterId => $clusterPoints) {
             foreach ($clusterPoints as $pointIndex) {
                 $clusterAssignments[] = [
                     'pelanggan_id' => $pelangganIds[$pointIndex],
-                    'cluster_id' => $clusterId + 1, // Cluster dimulai dari 1
+                    'cluster_id' => $clusterId + 1,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
             }
         }
 
-        Log::info('INI CLUSTER PELANGGAN YANG AKAN DISAVE:'.json_encode($clusterAssignments,JSON_PRETTY_PRINT));
-
         $hasilKmeans = DB::table('hasil_kmeans')->insert($clusterAssignments);
 
-        // Kirim notifikasi sukses
         if ($hasilKmeans) {
-            Notification::make()
-                ->title('Clustering Berhasil')
-                ->body('Hasil clustering telah disimpan ke database.')
-                ->success()
-                ->send();
+            $pelangganIdsWithEmail = DB::table('pelanggans')
+            ->whereIn('id', collect($clusterAssignments)->pluck('pelanggan_id'))
+            ->whereNotNull('email_pelanggan')
+            ->where('email_pelanggan', '!=', '')
+                ->get(['id', 'email_pelanggan', 'nama_pelanggan']);
+
+            $emailMap = $pelangganIdsWithEmail->mapWithKeys(function ($item) {
+                return [$item->id => ['email' => $item->email_pelanggan, 'name' => $item->nama_pelanggan]];
+            });
+
+            foreach ($clusterAssignments as $assignment) {
+                if (isset($emailMap[$assignment['pelanggan_id']])) {
+                    $email = $emailMap[$assignment['pelanggan_id']]['email'];
+                    $name = $emailMap[$assignment['pelanggan_id']]['name'];
+                    try {
+                        FacadesNotification::route('mail', $email)
+                        ->notify(new ClusterAssignmentNotification($assignment['cluster_id'], $name));
+                    } catch (\Exception $e) {
+                        Log::error("Error sending notification to {$email}: " . $e->getMessage());
+                    }
+                }
+            }
         }
+
     }
 
     /**
