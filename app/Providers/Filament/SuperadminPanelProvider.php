@@ -2,6 +2,10 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\Dashboard\KmeansCountWidget;
+use App\Filament\Widgets\Dashboard\PelangganCountWidget;
+use App\Filament\Widgets\Dashboard\RfmCountWidget;
+use App\Filament\Widgets\Dashboard\TransaksiCountWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -37,8 +41,10 @@ class SuperadminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                PelangganCountWidget::class,
+                TransaksiCountWidget::class,
+                RfmCountWidget::class,
+                KmeansCountWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
