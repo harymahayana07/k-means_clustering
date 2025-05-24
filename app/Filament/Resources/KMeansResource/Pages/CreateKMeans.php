@@ -2,11 +2,10 @@
 
 namespace App\Filament\Resources\KMeansResource\Pages;
 
+use App\Filament\Pages\RytechCreateRecord;
 use App\Filament\Resources\KMeansResource;
-use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
 
-class CreateKMeans extends CreateRecord
+class CreateKMeans extends RytechCreateRecord
 {
     protected static string $resource = KMeansResource::class;
 }
