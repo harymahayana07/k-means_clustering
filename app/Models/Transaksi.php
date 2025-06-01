@@ -2,8 +2,7 @@
 
 namespace App\Models;
 
-use app\Models\Relationship\TransaksiRelation;
-use app\Models\Relationship\TransaksiRelationship;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,6 +15,19 @@ class Transaksi extends Model
     protected $table = 'transaksis';
     protected $guarded = ['id'];
     protected $dates = ['deleted_at'];
+
+    protected $casts = [
+        'tanggal_transaksi' => 'date:Y-m-d',
+    ];
+
+    protected static function booted()
+    {
+        static::creating(function (Transaksi $model) {
+            if (empty($model->tanggal_transaksi)) {
+                $model->tanggal_transaksi = Carbon::now()->toDateString();
+            }
+        });
+    }
 
     public function pelanggan(): BelongsTo
     {

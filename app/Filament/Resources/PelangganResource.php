@@ -34,7 +34,11 @@ class PelangganResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            // ->persistQueryString()
             ->columns([
+                Tables\Columns\TextColumn::make('no_pelanggan')
+                    ->label('No. Pelanggan')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('nama_pelanggan')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -53,6 +57,7 @@ class PelangganResource extends Resource
             ->filters([
                 //
             ])
+            ->defaultSort('no_pelanggan', 'desc')
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
