@@ -116,16 +116,16 @@
             <div class="content ps-0 ps-lg-5">
               <p class="fst-italic">
                 Grand Asia adalah toko retail sembako terpercaya yang menyediakan berbagai kebutuhan pokok masyarakat Indonesia.
-Mulai dari beras, minyak goreng, gula, telur, hingga kebutuhan dapur lainnya, semua tersedia dengan harga yang kompetitif dan kualitas terbaik.
-<br>
-Kami juga berkomitmen untuk :
+                Mulai dari beras, minyak goreng, gula, telur, hingga kebutuhan dapur lainnya, semua tersedia dengan harga yang kompetitif dan kualitas terbaik.
+                <br>
+                Kami juga berkomitmen untuk :
               </p>
               <ul>
                 <li><i class="bi bi-check-circle-fill"></i> <span>Menyediakan produk segar & berkualitas.</span></li>
                 <li><i class="bi bi-check-circle-fill"></i> <span>Memberikan harga terbaik untuk pelanggan setia kami.</span></li>
                 <li><i class="bi bi-check-circle-fill"></i> <span>Melayani dengan ramah, cepat, dan terpercaya.</span></li>
               </ul>
-            
+
             </div>
           </div>
         </div>
@@ -200,85 +200,32 @@ Kami juga berkomitmen untuk :
             </div>
 
             <div class="row gy-5">
-
+              @foreach($produkTerlaris as $item)
               <div class="col-lg-4 menu-item">
-                <a href="{{ asset('dashboard-utama/assets/img/menu/menu-item-1.png') }}" class="glightbox"><img
-                    src="{{ asset('dashboard-utama/assets/img/menu/menu-item-1.png') }}" class="menu-img img-fluid"
-                    alt=""></a>
-                <h4>Magnam Tiste</h4>
+                <!-- <a
+                  href="{{ asset('storage/' . $item->produk->image_path) }}"
+                  class="glightbox">
+                  <img
+                    src="{{ asset('storage/' . $item->produk->image_path) }}"
+                    class="menu-img img-fluid"
+                    alt="{{ $item->produk->nama_produk }}">
+                </a> -->
+
+                <h4>{{ $item->produk->nama_produk }}</h4>
+
                 <p class="ingredients">
-                  Lorem, deren, trataro, filede, nerada
+                  {{ $item->produk->deskripsi ?? '-' }}
                 </p>
+
                 <p class="price">
-                  $5.95
+                  Harga: Rp {{ number_format($item->produk->harga,0,',','.') }}
+                  <br>
+                  <span class="badge" style="background:#007bff; color:#fff; font-size:1rem;">
+                    {{ number_format($item->total_qty, 0, ',', '.') }} pcs
+                  </span>
                 </p>
               </div>
-
-              <div class="col-lg-4 menu-item">
-                <a href="{{ asset('dashboard-utama/assets/img/menu/menu-item-2.png') }}" class="glightbox"><img
-                    src="{{ asset('dashboard-utama/assets/img/menu/menu-item-2.png') }}" class="menu-img img-fluid"
-                    alt=""></a>
-                <h4>Aut Luia</h4>
-                <p class="ingredients">
-                  Lorem, deren, trataro, filede, nerada
-                </p>
-                <p class="price">
-                  $14.95
-                </p>
-              </div>
-
-              <div class="col-lg-4 menu-item">
-                <a href="{{ asset('dashboard-utama/assets/img/menu/menu-item-3.png') }}" class="glightbox"><img
-                    src="{{ asset('dashboard-utama/assets/img/menu/menu-item-3.png') }}" class="menu-img img-fluid"
-                    alt=""></a>
-                <h4>Est Eligendi</h4>
-                <p class="ingredients">
-                  Lorem, deren, trataro, filede, nerada
-                </p>
-                <p class="price">
-                  $8.95
-                </p>
-              </div>
-
-              <div class="col-lg-4 menu-item">
-                <a href="{{ asset('dashboard-utama/assets/img/menu/menu-item-4.png') }}" class="glightbox"><img
-                    src="{{ asset('dashboard-utama/assets/img/menu/menu-item-4.png') }}" class="menu-img img-fluid"
-                    alt=""></a>
-                <h4>Eos Luibusdam</h4>
-                <p class="ingredients">
-                  Lorem, deren, trataro, filede, nerada
-                </p>
-                <p class="price">
-                  $12.95
-                </p>
-              </div>
-
-              <div class="col-lg-4 menu-item">
-                <a href="{{ asset('dashboard-utama/assets/img/menu/menu-item-5.png') }}" class="glightbox"><img
-                    src="{{ asset('dashboard-utama/assets/img/menu/menu-item-5.png') }}" class="menu-img img-fluid"
-                    alt=""></a>
-                <h4>Eos Luibusdam</h4>
-                <p class="ingredients">
-                  Lorem, deren, trataro, filede, nerada
-                </p>
-                <p class="price">
-                  $12.95
-                </p>
-              </div>
-
-              <div class="col-lg-4 menu-item">
-                <a href="{{ asset('dashboard-utama/assets/img/menu/menu-item-6.png') }}" class="glightbox"><img
-                    src="{{ asset('dashboard-utama/assets/img/menu/menu-item-6.png') }}" class="menu-img img-fluid"
-                    alt=""></a>
-                <h4>Laboriosam Direva</h4>
-                <p class="ingredients">
-                  Lorem, deren, trataro, filede, nerada
-                </p>
-                <p class="price">
-                  $9.95
-                </p>
-              </div>
-
+              @endforeach
             </div>
           </div>
 
@@ -436,71 +383,37 @@ Kami juga berkomitmen untuk :
 
     <!-- Book A Table Section -->
     <section id="book-a-table" class="contact section">
-      <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
-        <h2>Daftar Pelanggan Pareto</h2>
-      </div><!-- End Section Title -->
+        <h2>Daftar Pelanggan</h2>
+      </div>
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
         <div class="row gy-4">
-
+          @foreach($pelanggan as $trx)
           <div class="col-md-6">
-            <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
-              <div class="border-custom-baru">1</div>
+            <div
+              class="info-item d-flex align-items-center"
+              data-aos="fade-up"
+              data-aos-delay="200">
+              <div class="border-custom-baru">
+                {{ $trx->total_transaksi }}
+              </div>
               <div>
-                <h3>I MADE HARY MAHAYANA</h3>
-                <p>harymahayana@gmail.com / 087851410149</p>
+                <h3>{{ $trx->pelanggan->nama_pelanggan }}</h3>
+                <p>
+                  {{ $trx->pelanggan->email_pelanggan ?? '-' }}
+                  @if(! empty($trx->pelanggan->no_telp_pelanggan))
+                  / {{ $trx->pelanggan->no_telp_pelanggan }}
+                  @endif
+                </p>
               </div>
             </div>
-          </div><!-- End Info Item -->
-
-          <div class="col-md-6">
-            <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
-              <div class="border-custom-baru">2</div>
-              <div>
-                <h3>I MADE HARY MAHAYANA</h3>
-                <p>harymahayana@gmail.com / 087851410149</p>
-              </div>
-            </div>
-          </div><!-- End Info Item -->
-
-          <div class="col-md-6">
-            <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
-              <div class="border-custom-baru">20</div>
-              <div>
-                <h3>I MADE HARY MAHAYANA</h3>
-                <p>harymahayana@gmail.com / 087851410149</p>
-              </div>
-            </div>
-          </div><!-- End Info Item -->
-
-
-          <div class="col-md-6">
-            <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
-              <div class="border-custom-baru">120</div>
-              <div>
-                <h3>I MADE HARY MAHAYANA</h3>
-                <p>harymahayana@gmail.com / 087851410149</p>
-              </div>
-            </div>
-          </div><!-- End Info Item -->
-
-          <div class="col-md-6">
-            <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
-              <div class="border-custom-baru">120</div>
-              <div>
-                <h3>I MADE HARY MAHAYANA</h3>
-                <p>harymahayana@gmail.com / 087851410149</p>
-              </div>
-            </div>
-          </div><!-- End Info Item -->
-
-        
-
+          </div>
+          @endforeach
         </div>
       </div>
 
-    </section><!-- /Book A Table Section -->
+    </section>
 
     <!-- Contact Section -->
     <section id="contact" class="contact section">
