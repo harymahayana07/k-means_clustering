@@ -2,11 +2,10 @@
 
 namespace App\Filament\Resources\HasilKmeansResource\Pages;
 
+use App\Filament\Pages\RytechCreateRecord;
 use App\Filament\Resources\HasilKmeansResource;
-use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
 
-class CreateHasilKmeans extends CreateRecord
+class CreateHasilKmeans extends RytechCreateRecord
 {
     protected static string $resource = HasilKmeansResource::class;
 }

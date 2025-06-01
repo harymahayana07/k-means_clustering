@@ -2,15 +2,14 @@
 
 namespace App\Filament\Resources\RFMResource\Pages;
 
+use App\Filament\Pages\RytechCreateRecord;
 use App\Filament\Resources\RFMResource;
 use App\Models\RFM;
 use App\Models\Transaksi;
 use Carbon\Carbon;
-use Filament\Notifications\Notification;
-use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Log;
 
-class CreateRFM extends CreateRecord
+class CreateRFM extends RytechCreateRecord
 {
     protected static string $resource = RFMResource::class;
 
