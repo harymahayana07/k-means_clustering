@@ -18,12 +18,12 @@ class Pelanggan extends Model
     protected $dates = ['deleted_at'];
 
     /**
-    * Hijack data form sebelum disimpan,
-    * agar no_pelanggan = YYYYMMDD + urutan 3 digit.
-    *
-    * @param  array  $data  Hasil state form
-    * @return array<int, array>  Array of data-records
-    */
+     * Hijack data form sebelum disimpan,
+     * agar no_pelanggan = YYYYMMDD + urutan 3 digit.
+     *
+     * @param  array  $data  Hasil state form
+     * @return array<int, array>  Array of data-records
+     */
     protected static function booted()
     {
         static::creating(function ($pelanggan) {
