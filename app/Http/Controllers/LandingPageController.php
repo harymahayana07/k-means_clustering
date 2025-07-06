@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HasilKmeans;
 use App\Models\Transaksi;
 use Illuminate\Support\Facades\DB;
 
@@ -14,12 +15,11 @@ class LandingPageController extends Controller
      */
     public function index()
     {
-        $pelanggan = Transaksi::query()
-            ->select('pelanggan_id', DB::raw('COUNT(*) AS total_transaksi'))
-            ->groupBy('pelanggan_id')
-            ->orderByDesc('total_transaksi')
-            ->with('pelanggan')
-            ->limit(12)
+        $pelanggan = HasilKmeans::query()
+            ->select('pelanggan_id', 'cluster_id')
+            ->orderBy('cluster_id', 'asc')
+            ->with('cluster', 'pelanggan')
+            ->limit(6)
             ->get();
 
         $produkTerlaris = Transaksi::query()
