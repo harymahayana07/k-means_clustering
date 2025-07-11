@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('pelanggans', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('no_pelanggan')->unique();
             $table->string('nama_pelanggan');
+            $table->string('email_pelanggan')->unique()->nullable();
+            $table->string('no_telp_pelanggan')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -2,11 +2,10 @@
 
 namespace App\Filament\Resources\TransaksiResource\Pages;
 
+use App\Filament\Pages\RytechCreateRecord;
 use App\Filament\Resources\TransaksiResource;
-use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
 
-class CreateTransaksi extends CreateRecord
+class CreateTransaksi extends RytechCreateRecord
 {
     protected static string $resource = TransaksiResource::class;
 }
